@@ -11,7 +11,7 @@
   var KEY = "docs-ui-prefs-v1";
   var DEFAULTS = {
     preset: "Indigo",     // name of a preset below
-    scheme: null,         // null = follow the header light/dark toggle
+    scheme: "default",    // default = light, slate = dark
     primary: "indigo",    // header and link color
     accent: "indigo",     // highlight color
     fit: true,            // true = use the full screen width
@@ -121,6 +121,10 @@
     prefs.zoom = Math.min(1.6, Math.max(0.8, Math.round(z * 100) / 100));
     save(); applyZoom(); refreshPanel();
   }
+  function setMode(m) {
+    prefs.scheme = m; prefs.preset = "";
+    save(); applyColors(); refreshPanel();
+  }
   function setFit(v) { prefs.fit = v; save(); applyFit(); refreshPanel(); }
   function copyLink() {
     var done = function () { showToast("Page link copied"); };
@@ -178,6 +182,17 @@
       presets.appendChild(b);
     });
     panel.appendChild(presets);
+
+    /* Light / dark mode */
+    panel.appendChild(el("h4", "", "Mode"));
+    var modeRow = el("div", "ui-row");
+    [["default", "Light"], ["slate", "Dark"]].forEach(function (m) {
+      var b = el("button", "ui-btn", m[1]);
+      b.dataset.mode = m[0];
+      b.onclick = function () { setMode(m[0]); };
+      modeRow.appendChild(b);
+    });
+    panel.appendChild(modeRow);
 
     /* Custom color */
     panel.appendChild(el("h4", "", "Custom color"));
@@ -288,6 +303,10 @@
     for (i = 0; i < list.length; i++) {
       list[i].classList.toggle("is-on", list[i].dataset.color === prefs.primary);
     }
+    list = panel.querySelectorAll("[data-mode]");
+    for (i = 0; i < list.length; i++) {
+      list[i].classList.toggle("is-on", list[i].dataset.mode === (prefs.scheme || "default"));
+    }
     list = panel.querySelectorAll("[data-fit]");
     for (i = 0; i < list.length; i++) {
       list[i].classList.toggle("is-on", (list[i].dataset.fit === "1") === !!prefs.fit);
@@ -335,6 +354,7 @@
     else if (e.code === "Equal") { e.preventDefault(); setZoom(prefs.zoom + 0.05); }
     else if (e.code === "Minus") { e.preventDefault(); setZoom(prefs.zoom - 0.05); }
     else if (e.code === "Digit0") { e.preventDefault(); setZoom(1); }
+    else if (e.code === "KeyD") { e.preventDefault(); setMode(prefs.scheme === "slate" ? "default" : "slate"); }
     else if (e.code === "KeyW") { e.preventDefault(); setFit(!prefs.fit); }
   });
 

@@ -1,4 +1,30 @@
 /* =========================================================
+   0. SIDEBAR STYLE (soft pill for the active item)
+   ========================================================= */
+:root {
+  --nav-pill-bg: #eceae4;
+}
+[data-md-color-scheme="slate"] {
+  --nav-pill-bg: rgba(255, 255, 255, 0.1);
+}
+
+/* Highlight the active sidebar item like a soft pill */
+.md-nav__item--active > .md-nav__link {
+  background: var(--nav-pill-bg);
+  border-radius: 10px;
+  padding: 6px 10px;
+}
+
+.md-nav__link {
+  font-weight: 500;
+}
+
+/* Bold top-level sidebar items */
+.md-nav--primary > .md-nav__list > .md-nav__item > .md-nav__link {
+  font-weight: 700;
+}
+
+/* =========================================================
    1. FIT-TO-SCREEN LAYOUT
    Material limits the page to ~61rem and leaves empty margins.
    "fit-width" (on by default, toggle in the Settings panel)
@@ -13,11 +39,11 @@ html.fit-width .md-content__inner {
   margin-inline: 1rem;
 }
 html.fit-width .md-sidebar {
-  width: 11rem;
+  width: 13rem;
 }
 @media screen and (min-width: 100em) {
   html.fit-width .md-sidebar {
-    width: 11.5rem;
+    width: 13.5rem;
   }
 }
 /* Keep very long lines of text readable on ultra-wide screens */
