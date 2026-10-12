@@ -1,0 +1,353 @@
+/* =========================================================
+   1. FIT-TO-SCREEN LAYOUT
+   Material limits the page to ~61rem and leaves empty margins.
+   "fit-width" (on by default, toggle in the Settings panel)
+   lets the page use the whole browser width.
+   ========================================================= */
+html.fit-width .md-grid {
+  max-width: none;
+  padding-inline: 0.8rem;
+}
+html.fit-width .md-content__inner {
+  max-width: none;
+  margin-inline: 1rem;
+}
+html.fit-width .md-sidebar {
+  width: 11rem;
+}
+@media screen and (min-width: 100em) {
+  html.fit-width .md-sidebar {
+    width: 11.5rem;
+  }
+}
+/* Keep very long lines of text readable on ultra-wide screens */
+html.fit-width .md-typeset > p,
+html.fit-width .md-typeset > ul,
+html.fit-width .md-typeset > ol {
+  max-width: 100ch;
+}
+
+/* =========================================================
+   2. FONT CHOICES  (set from the Settings panel)
+   ========================================================= */
+html[data-ui-font="system"] {
+  --md-text-font: system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+html[data-ui-font="serif"] {
+  --md-text-font: Georgia, "Times New Roman", serif;
+}
+html[data-ui-font="mono"] {
+  --md-text-font: "Roboto Mono", Consolas, monospace;
+}
+
+/* =========================================================
+   3. DENSITY
+   ========================================================= */
+html[data-ui-density="compact"] .md-typeset {
+  line-height: 1.5;
+}
+html[data-ui-density="compact"] .md-typeset p,
+html[data-ui-density="compact"] .md-typeset ul,
+html[data-ui-density="compact"] .md-typeset ol,
+html[data-ui-density="compact"] .md-typeset .admonition {
+  margin-block: 0.6em;
+}
+html[data-ui-density="comfortable"] .md-typeset {
+  line-height: 1.75;
+}
+
+/* =========================================================
+   4. READING PROGRESS BAR
+   ========================================================= */
+#ui-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  width: 0;
+  z-index: 10;
+  background: var(--md-accent-fg-color);
+  transition: width 0.1s linear;
+}
+html[data-ui-progress="off"] #ui-progress {
+  display: none;
+}
+
+/* =========================================================
+   5. FLOATING SETTINGS BUTTON + PANEL
+   ========================================================= */
+#ui-fab {
+  position: fixed;
+  right: 1.2rem;
+  bottom: 1.2rem;
+  z-index: 5;
+  width: 2.8rem;
+  height: 2.8rem;
+  border: 0;
+  border-radius: 50%;
+  cursor: pointer;
+  color: var(--md-primary-bg-color);
+  background: var(--md-primary-fg-color);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+  font-size: 1.3rem;
+  line-height: 1;
+  transition: transform 0.2s;
+}
+#ui-fab:hover {
+  transform: rotate(60deg) scale(1.08);
+}
+
+#ui-panel {
+  position: fixed;
+  right: 1.2rem;
+  bottom: 4.6rem;
+  z-index: 5;
+  width: 21rem;
+  max-width: calc(100vw - 2rem);
+  max-height: calc(100vh - 7rem);
+  overflow-y: auto;
+  padding: 0.9rem 1rem 1rem;
+  border-radius: 0.6rem;
+  border: 1px solid var(--md-default-fg-color--lightest);
+  color: var(--md-default-fg-color);
+  background: var(--md-default-bg-color);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+  font-size: 0.72rem;
+}
+#ui-panel[hidden] {
+  display: none;
+}
+#ui-panel h4 {
+  margin: 0.9rem 0 0.4rem;
+  font-size: 0.68rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  opacity: 0.65;
+}
+#ui-panel h4:first-of-type {
+  margin-top: 0.3rem;
+}
+#ui-panel .ui-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+#ui-panel .ui-close {
+  border: 0;
+  background: none;
+  cursor: pointer;
+  color: inherit;
+  font-size: 1rem;
+}
+.ui-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  align-items: center;
+}
+.ui-btn {
+  padding: 0.25rem 0.6rem;
+  border: 1px solid var(--md-default-fg-color--lighter);
+  border-radius: 0.35rem;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+  background: transparent;
+}
+.ui-btn:hover {
+  border-color: var(--md-accent-fg-color);
+  color: var(--md-accent-fg-color);
+}
+.ui-btn.is-on {
+  color: var(--md-primary-bg-color);
+  background: var(--md-primary-fg-color);
+  border-color: var(--md-primary-fg-color);
+}
+.ui-presets {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.4rem;
+}
+.ui-preset {
+  padding: 0.2rem;
+  border: 2px solid transparent;
+  border-radius: 0.4rem;
+  cursor: pointer;
+  background: none;
+  color: inherit;
+  font: inherit;
+  font-size: 0.6rem;
+  text-align: center;
+}
+.ui-preset i {
+  display: block;
+  height: 1.5rem;
+  margin-bottom: 0.15rem;
+  border-radius: 0.3rem;
+  border: 1px solid rgba(0, 0, 0, 0.25);
+}
+.ui-preset.is-on {
+  border-color: var(--md-accent-fg-color);
+}
+.ui-swatches {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+}
+.ui-swatch {
+  width: 1.2rem;
+  height: 1.2rem;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  padding: 0;
+}
+.ui-swatch.is-on {
+  border-color: var(--md-default-fg-color);
+  transform: scale(1.15);
+}
+#ui-panel select {
+  width: 100%;
+  padding: 0.25rem;
+  border-radius: 0.3rem;
+  color: inherit;
+  background: var(--md-default-bg-color);
+  border: 1px solid var(--md-default-fg-color--lighter);
+}
+#ui-panel label.ui-check {
+  display: flex;
+  gap: 0.4rem;
+  align-items: center;
+  cursor: pointer;
+}
+.ui-zoom-val {
+  min-width: 2.8rem;
+  text-align: center;
+  font-weight: 700;
+}
+
+#ui-toast {
+  position: fixed;
+  left: 50%;
+  bottom: 1.5rem;
+  z-index: 6;
+  transform: translateX(-50%);
+  padding: 0.45rem 1rem;
+  border-radius: 2rem;
+  color: #fff;
+  background: rgba(30, 30, 30, 0.92);
+  font-size: 0.75rem;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s;
+}
+#ui-toast.show {
+  opacity: 1;
+}
+
+@media print {
+  #ui-fab, #ui-panel, #ui-progress, #ui-toast {
+    display: none !important;
+  }
+}
+
+/* =========================================================
+   6. SMALL POLISH
+   ========================================================= */
+.md-typeset .grid.cards > ul > li {
+  transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
+}
+.md-typeset .grid.cards > ul > li:hover {
+  transform: translateY(-3px);
+}
+.md-typeset table:not([class]) th[aria-sort]::after {
+  content: " \21C5";
+  opacity: 0.4;
+}
+.md-typeset table:not([class]) th[aria-sort="ascending"]::after {
+  content: " \25B2";
+  opacity: 0.9;
+}
+.md-typeset table:not([class]) th[aria-sort="descending"]::after {
+  content: " \25BC";
+  opacity: 0.9;
+}
+.md-typeset table:not([class]) th {
+  cursor: pointer;
+}
+
+/* =========================================================
+   7. SHOWCASE COMPONENTS (stat cards, bars, badges, timeline)
+   ========================================================= */
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+  gap: 0.8rem;
+  margin: 1rem 0;
+}
+.stat {
+  padding: 0.8rem 1rem;
+  border-radius: 0.5rem;
+  border-left: 4px solid var(--md-primary-fg-color);
+  background: var(--md-code-bg-color);
+}
+.stat strong {
+  display: block;
+  font-size: 1.6rem;
+  line-height: 1.2;
+}
+.stat span {
+  font-size: 0.7rem;
+  opacity: 0.75;
+}
+.pbar {
+  height: 0.6rem;
+  margin: 0.3rem 0 0.9rem;
+  overflow: hidden;
+  border-radius: 99px;
+  background: var(--md-code-bg-color);
+}
+.pbar > i {
+  display: block;
+  height: 100%;
+  width: var(--v);
+  border-radius: 99px;
+  background: linear-gradient(90deg, var(--md-primary-fg-color), var(--md-accent-fg-color));
+}
+.badge {
+  display: inline-block;
+  padding: 0.05rem 0.55rem;
+  border-radius: 99px;
+  color: #fff;
+  background: var(--md-primary-fg-color);
+  font-size: 0.65rem;
+  font-weight: 700;
+}
+.badge.ok { background: #2e7d32; }
+.badge.warn { background: #ef6c00; }
+.badge.err { background: #c62828; }
+.badge.info { background: #0277bd; }
+.timeline {
+  margin: 1rem 0 1rem 0.5rem;
+  padding-left: 1.2rem;
+  border-left: 3px solid var(--md-primary-fg-color);
+}
+.timeline > div {
+  position: relative;
+  margin-bottom: 1rem;
+}
+.timeline > div::before {
+  content: "";
+  position: absolute;
+  left: -1.7rem;
+  top: 0.3rem;
+  width: 0.7rem;
+  height: 0.7rem;
+  border-radius: 50%;
+  background: var(--md-accent-fg-color);
+}
+.timeline b {
+  display: block;
+}
