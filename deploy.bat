@@ -2,9 +2,13 @@
 setlocal EnableExtensions
 cd /d "%~dp0"
 
+REM Use existing .venv if present, otherwise venv
 set "VENV_DIR=venv"
+if exist ".venv\Scripts\activate.bat" set "VENV_DIR=.venv"
+
 set "MSG=%~1"
 if "%MSG%"=="" set "MSG=Collapsible sidebar and instant navigation"
+set "PUSHLOG=%TEMP%\deploy_push.log"
 
 echo ==================================================
 echo  MkDocs end-to-end deploy
@@ -44,7 +48,7 @@ if errorlevel 1 goto :fail
 goto :deps_ready
 :install_reqs
 echo     Installing from requirements.txt...
-python -m pip install -r requirements.txt
+python -m pip install -q -r requirements.txt
 if errorlevel 1 goto :fail
 :deps_ready
 
@@ -58,18 +62,19 @@ if errorlevel 1 git init
 if errorlevel 1 goto :fail
 :git_ready
 
-REM .gitignore so venv/ and site/ are never committed
-if not exist ".gitignore" goto :make_ignore
-findstr /b /c:"%VENV_DIR%/" ".gitignore" >nul 2>&1
-if errorlevel 1 echo %VENV_DIR%/>>".gitignore"
-findstr /b /c:"site/" ".gitignore" >nul 2>&1
-if errorlevel 1 echo site/>>".gitignore"
-goto :ignore_done
-:make_ignore
-echo %VENV_DIR%/>".gitignore"
-echo site/>>".gitignore"
-echo __pycache__/>>".gitignore"
-:ignore_done
+REM .gitignore: venv folders, build output, caches
+call :ensure_ignore "venv/"
+call :ensure_ignore ".venv/"
+call :ensure_ignore "site/"
+call :ensure_ignore "__pycache__/"
+
+REM Untrack venv/site if they were committed earlier
+for %%D in (venv .venv site) do (
+    git ls-files --error-unmatch "%%D" >nul 2>&1 && (
+        echo     Untracking "%%D"...
+        git rm -r --cached -q "%%D" >nul 2>&1
+    )
+)
 
 REM ---------- Remote check (create GitHub repo if needed) ----------
 git remote get-url origin >nul 2>&1
@@ -79,7 +84,6 @@ echo     No remote "origin" configured.
 where gh >nul 2>&1
 if errorlevel 1 goto :manual_remote
 
-REM --- GitHub CLI login ---
 gh auth status >nul 2>&1
 if not errorlevel 1 goto :gh_authed
 echo     Logging in to GitHub...
@@ -88,13 +92,11 @@ if errorlevel 1 goto :fail
 :gh_authed
 gh auth setup-git >nul 2>&1
 
-REM --- Repo name = project folder name ---
 for %%I in (.) do set "REPO_NAME=%%~nxI"
 set "GH_USER="
 for /f "delims=" %%U in ('gh api user --jq .login') do set "GH_USER=%%U"
 if "%GH_USER%"=="" goto :fail
 
-REM --- Does the repo already exist on GitHub? ---
 gh repo view "%GH_USER%/%REPO_NAME%" >nul 2>&1
 if not errorlevel 1 goto :repo_exists
 
@@ -140,8 +142,64 @@ REM ---------- 6. Push ----------
 :push_step
 echo.
 echo [6/7] Pushing to origin...
+set "BRANCH="
+for /f "delims=" %%B in ('git rev-parse --abbrev-ref HEAD') do set "BRANCH=%%B"
+if "%BRANCH%"=="" goto :fail
+
+git push -u origin HEAD > "%PUSHLOG%" 2>&1
+set "PUSH_RC=%errorlevel%"
+type "%PUSHLOG%"
+if "%PUSH_RC%"=="0" goto :push_ok
+
+REM Blocked by repository rules (e.g. secret scanning)
+findstr /c:"GH013" "%PUSHLOG%" >nul 2>&1
+if not errorlevel 1 goto :push_blocked
+
+REM Remote has commits we do not have
+findstr /i /c:"non-fast-forward" /c:"fetch first" "%PUSHLOG%" >nul 2>&1
+if not errorlevel 1 goto :push_diverged
+goto :fail
+
+:push_blocked
+echo.
+echo     GitHub blocked the push (repository rule / secret scanning).
+echo     Remove the flagged secret from your files, revoke it, then
+echo     rewrite the history:  git update-ref -d HEAD ^&^& git add . ^&^& git commit
+goto :fail
+
+:push_diverged
+echo.
+echo     Remote "%BRANCH%" has commits that your local branch does not.
+git fetch origin
+echo     --- Latest remote commits ---
+git log --oneline -5 origin/%BRANCH%
+echo     -----------------------------
+echo.
+echo     [O] Overwrite remote with local   (remote commits are LOST)
+echo     [M] Merge remote into local       (keeps both)
+echo     [A] Abort
+choice /c OMA /n /m "    Choose O, M or A: "
+if errorlevel 3 goto :fail
+if errorlevel 2 goto :do_merge
+goto :do_overwrite
+
+:do_overwrite
+git push --force-with-lease -u origin HEAD
+if errorlevel 1 goto :fail
+goto :push_ok
+
+:do_merge
+git pull --rebase --allow-unrelated-histories origin %BRANCH%
+if errorlevel 1 (
+    echo     Merge conflict. Resolve files, run: git add . ^&^& git rebase --continue
+    echo     Then run deploy.bat again.
+    goto :fail
+)
 git push -u origin HEAD
 if errorlevel 1 goto :fail
+
+:push_ok
+if exist "%PUSHLOG%" del "%PUSHLOG%" >nul 2>&1
 
 REM ---------- 7. Deploy ----------
 echo.
@@ -173,3 +231,9 @@ echo  FAILED: check the messages above.
 echo ==================================================
 pause
 exit /b 1
+
+REM ---------- Subroutine: add a line to .gitignore if missing ----------
+:ensure_ignore
+findstr /x /c:"%~1" ".gitignore" >nul 2>&1
+if errorlevel 1 echo %~1>>".gitignore"
+exit /b 0
