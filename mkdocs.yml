@@ -1,0 +1,116 @@
+site_name: Markdown Features Starter
+site_description: A starter docs site that demonstrates GUI features you can add to .md files
+site_url: https://<username>.github.io/md-docs-starter/   # replace <username> with your GitHub username
+copyright: Copyright &copy; 2026 Your Name
+
+theme:
+  name: material
+  custom_dir: overrides
+  palette:
+    scheme: default        # fixed scheme avoids light/dark flash on page load
+    primary: indigo
+    accent: indigo
+  icon:
+    repo: fontawesome/brands/github
+  features:
+    - announce.dismiss
+    - header.autohide
+    - navigation.instant            # swaps content without a full page reload (fixes blinking)
+    - navigation.instant.progress   # thin progress bar on slow loads
+    - navigation.tracking           # URL follows the heading you scroll to
+    - navigation.indexes            # section's index.md becomes the section's own page
+    - navigation.path               # breadcrumb above the page title
+    - navigation.top
+    - navigation.footer
+    - search.suggest
+    - search.highlight
+    - search.share
+    - toc.follow                    # right-side table of contents follows scroll
+    - content.code.copy
+    - content.code.annotate
+    - content.tabs.link
+    - content.tooltips
+    # Intentionally NOT included, because they stop the sidebar from collapsing:
+    #   navigation.sections, navigation.tabs, navigation.expand
+
+nav:
+  - Home: index.md
+  - Getting Started: getting-started.md
+  - Theme Lab: theme-lab.md
+  - Features:
+      - Overview: features/index.md
+      - Callouts and Collapsibles: features/callouts.md
+      - Code Blocks: features/code.md
+      - Diagrams and Math: features/diagrams-math.md
+      - Text, Layout and Media: features/text-and-layout.md
+      - Interactive Bits: features/interactive.md
+      - UI Showcase: features/showcase.md
+  - Tags: tags.md
+
+plugins:
+  - search
+  - tags
+  - glightbox:
+      touchNavigation: true
+      loop: false
+      effect: zoom
+      zoomable: true
+      draggable: true
+
+markdown_extensions:
+  - abbr
+  - admonition
+  - attr_list
+  - def_list
+  - footnotes
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+  - pymdownx.arithmatex:
+      generic: true
+  - pymdownx.betterem
+  - pymdownx.caret
+  - pymdownx.details
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.keys
+  - pymdownx.mark
+  - pymdownx.smartsymbols
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.tilde
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/
+      name: GitHub
+    - icon: fontawesome/brands/linkedin
+      link: https://www.linkedin.com/
+      name: LinkedIn
+    - icon: fontawesome/solid/envelope
+      link: mailto:you@example.com
+      name: Email
+
+extra_css:
+  - stylesheets/extra.css
+
+extra_javascript:
+  - https://unpkg.com/tablesort@5.3.0/dist/tablesort.min.js
+  - javascripts/mathjax.js
+  - https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js
+  - javascripts/ui.js

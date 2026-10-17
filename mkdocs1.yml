@@ -1,0 +1,32 @@
+site_name: My Docs
+site_url: https://<username>.github.io/md-docs-starter/   # replace <username> with your GitHub username
+
+theme:
+  name: material
+  palette:
+    scheme: default        # fixed scheme avoids light/dark flash on page load
+  features:
+    - navigation.instant            # swaps content without a full page reload (fixes blinking)
+    - navigation.instant.progress   # thin progress bar on slow loads
+    - navigation.tracking           # URL follows the heading you scroll to
+    - navigation.indexes            # section's index.md becomes the section's own page
+    - navigation.path               # breadcrumb above the page title
+    - toc.follow                    # right-side table of contents follows scroll
+    # Intentionally NOT included, because they stop the sidebar from collapsing:
+    #   navigation.sections, navigation.tabs, navigation.expand
+
+extra_css:
+  - stylesheets/extra.css
+
+# Edit this nav to match your real files and folders (paths are relative to docs/)
+nav:
+  - Release notes: release-notes.md
+  - Get started:
+      - Overview: get-started/index.md
+      - Install: get-started/install.md
+  - Account management:
+      - Sign in: account/sign-in.md
+      - Billing: account/billing.md
+  - Troubleshooting:
+      - Error messages: troubleshooting/errors.md
+      - Incorrect responses: troubleshooting/incorrect.md

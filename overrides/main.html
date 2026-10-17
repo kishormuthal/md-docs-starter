@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block extrahead %}
+  <script>
+    /* Apply saved display settings as early as possible so the page does not
+       flash the default theme before the settings script runs. */
+    (function () {
+      try {
+        var p = JSON.parse(localStorage.getItem("docs-ui-prefs-v1") || "{}");
+        var h = document.documentElement;
+        if (p.fit !== false) h.classList.add("fit-width");
+        if (p.font) h.setAttribute("data-ui-font", p.font);
+        if (p.density) h.setAttribute("data-ui-density", p.density);
+        var mo = new MutationObserver(function () {
+          var b = document.body;
+          if (!b) return;
+          mo.disconnect();
+          if (p.scheme) b.setAttribute("data-md-color-scheme", p.scheme);
+          if (p.primary) b.setAttribute("data-md-color-primary", p.primary);
+          if (p.accent) b.setAttribute("data-md-color-accent", p.accent);
+        });
+        mo.observe(h, { childList: true });
+      } catch (e) {}
+    })();
+  </script>
+{% endblock %}
+
+{% block announce %}
+  New: click the <strong>&#9881; Settings</strong> button (bottom right) to change
+  the theme, zoom, page width and font. Press <strong>Alt + T</strong> to open it.
+{% endblock %}
